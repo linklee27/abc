@@ -1,1 +1,170 @@
+//page
+
+package autotest.page;
+import autotest.common.Base;
+import autotest.common.Helpers;
+import autotest.common.Helpers;
+import autotest.dataprovider.BaseDataProvider;
+import autotest.driver.DriverManager;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+import org.openqa.selenium.Point;
+
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.util.LinkedHashMap;
+
+
+public class TestCreateAcc extends Base {
+    private String pathFileNFC;
+
+    public TestCreateAcc() {
+    }
+
+    public Helpers helpers = new Helpers();
+
+    @DataProvider(name = "data_create_acc", parallel = true)
+    public Object[][] providecreateacc() {
+        String pathExcel = "src/test/java/resources/dataCreateAcc.xlsx";
+        Object[][] data = BaseDataProvider.getExcelDataObjectType(pathExcel, "Sheet1");
+        return data;
+    }
+
+    @Test(dataProvider = "data_create_acc")
+    public void testcaseName(LinkedHashMap<String, String> data) throws AWTException {
+        DriverManager.getDriver().get("https://staging.admin.hypit.paditech.org/login");
+        helpers.inputText(By.xpath("//input[@placeholder='Nhập tên tài khoản']"), "super_admin");
+        helpers.inputText(By.xpath("//input[@placeholder='Nhập mật khẩu']"), "12345678");
+        helpers.clickElement(By.xpath("//button[@class='btn btn-login']"));
+        helpers.clickElement(By.xpath("//span[contains(text(),'Quản lý tài khoản')]"));
+        helpers.clickElement(By.xpath("//a[contains(text(),'Tài khoản Creator')]"));
+        helpers.clickElement(By.xpath("//a[@class='btn btn-white btn-icon-text']"));
+        helpers.waitPageLoad(30);
+        helpers.sleep(4);
+
+        WebElement tmp = helpers.getElement(By.xpath("/html/body/div[2]/div[4]/div/div/form/div/div/div[1]/div[2]/div/div/div/div[1]/div/div[1]/img"));
+
+        Point point = tmp.getLocation();
+        Actions actions = new Actions(DriverManager.getDriver());
+        actions.moveByOffset(point.getX(), point.getY()).click().build().perform();
+
+        Robot robot = new Robot();
+        StringSelection pathFile1 = new StringSelection(data.get("avt"));
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(pathFile1, null);
+        helpers.sleep(1);
+        robot.keyPress(KeyEvent.VK_CONTROL);
+        robot.keyPress(KeyEvent.VK_V);
+        helpers.sleep(1);
+        robot.keyPress(KeyEvent.VK_ENTER);
+        robot.keyRelease(KeyEvent.VK_ENTER);
+        helpers.sleep(2);
+//        robot.keyRelease(KeyEvent.VK_CONTROL);
+//        robot.keyRelease(KeyEvent.VK_V);
+        helpers.inputText(By.name("full_name"), data.get("hoten"));
+        helpers.inputText(By.name("contacts[0][contact]"), data.get("sdt"));
+        helpers.inputText(By.name("contacts[1][contact]"), data.get("email"));
+        helpers.inputText(By.name("contacts[2][contact]"), data.get("sdtkhac"));
+        helpers.inputText(By.name("user_name"), data.get("username"));
+        helpers.inputText(By.name("password"), data.get("pass"));
+        helpers.inputText(By.name("password_confirmation"), data.get("confirmpass"));
+//        helpers.inputText(By.name("address"), data.get("address"));
+//        helpers.clickElement(By.xpath("//span[contains(text(),'Chọn quốc gia')]"));
+//        helpers.clickElement(By.xpath("//span[@class='select2-results']"));
+//        WebElement elementScroll = helpers.getElement(By.xpath("//button[contains(text(),'Tạo')]"));
+//        helpers.scrollToElement(elementScroll);
+//        if (!data.get("tinh/tp").equals(""))
+//            helpers.clickElement(By.xpath("//span[contains(text(),'Lựa chọn tỉnh / thành phố')]"));
+//            WebElement elementComboTinh = helpers.getElement(By.xpath("//input[@role='textbox']"));
+//            elementComboTinh.sendKeys(data.get("tinh/tp"));
+//            helpers.clickElement(By.xpath("//li[text()='" + data.get("tinh/tp") + "']"));
+
+//        helpers.clickElement(By.xpath("//span[@id='select2-province_id-li-container']//span[1]"));
+//        helpers.inputTextAndEnter(By.xpath("//input[@role='textbox']"), data.get("tinh/tp"));
+//        helpers.clickElement(By.xpath("//span[@id='select2-district_id-c0-container']//span[1]"));
+//        helpers.inputTextAndEnter(By.xpath("//input[@role='textbox']"), data.get("quan/huyen"));
+//        helpers.clickElement(By.xpath("//span[@id='select2-ward_id-xa-container']//span[1]"));
+//        helpers.inputTextAndEnter(By.xpath("//input[@role='textbox']"), data.get("phuong/xa"));
+//        helpers.inputText(By.xpath("//input[@placeholder='Nhập mã bưu chính']"), data.get("mabuuchinh"));
+//        helpers.inputText(By.xpath("//input[@placeholder='Nhập số CMT / CCCD / Hộ chiếu']"), data.get("cmt"));
+//        helpers.clickElement(By.xpath("//input[@name='portrait']"));
+//
+//        helpers.clickElement(By.xpath("//input[@name='identity_card_image_front']"));
+//
+//
+//        helpers.inputText(By.xpath("//textarea[@placeholder='Nhập ghi chú']"), data.get("ghichu"));
+        helpers.clickElement(By.xpath("//button[contains(text(),'Tạo')]"));
+        helpers.sleep(2);
+        helpers.waitPageLoad(10);
+        if (!data.get("msgToast").equals("")) {
+            WebElement elementToast = helpers.getElement(By.xpath("//div[@class='toast-message']"));
+            WebElement elementTable = helpers.getElement(By.xpath("//tr[@class='odd'][1]/td[8]"));
+            if (elementToast != null) {
+                helpers.checkText(elementToast, data.get("msgToast"));
+            }
+            if (elementTable != null) {
+                helpers.checkText(elementTable, data.get("username"));
+                helpers.clickElement(By.xpath("//body[1]/div[2]/div[4]/div[1]/div[1]/div[3]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[3]/div[2]/table[1]/tbody[1]/tr[1]/td[11]/div[1]/a[1]"));
+                // Get Attribute để kiểm tra file ảnh
+                WebElement elementImg = helpers.getElement(By.xpath("//img[@class='float-sm-left wd-100p wd-sm-200 rounded-circle']"));
+                String attValue = elementImg.getAttribute("src");
+                // Check thông tin sau khi tạo thành công
+                WebElement elementHoten = helpers.getElement(By.name("full_name"));
+                String checkHoTen = elementHoten.getAttribute("value");
+
+                if (attValue.equals("https://staging.admin.hypit.paditech.org/assets/img/users/1.jpg")) {
+                    helpers.failTestcase("Upload avt không thành công");
+                }
+                if (!checkHoTen.equals( data.get("hoten"))) {
+                    helpers.failTestcase("Thông tin không chính xác");
+                } else {
+                    helpers.successTestcase("Thông tin tài khoản hợp lệ");
+                }
+            } else {
+                helpers.failTestcase("Không hiển thị tên tài khoản");
+            }
+
+        } else {
+            helpers.failTestcase("Tạo tài khoản không thành công");
+        }
+        // Check họ tên không đúng định dạng
+        if (!data.get("errorHoten").equals("")) {
+            WebElement elementErrorHoten = helpers.getElement(By.xpath("//p[contains(text(),'Họ và tên không đúng định dạng')]"));
+            if (elementErrorHoten != null) {
+                helpers.checkText(elementErrorHoten, data.get("errorHoten"));
+            } else {
+                helpers.failTestcase("Không có thông báo lỗi");
+            }
+        }
+    }
+}
+
+//Testcase
+package autotest.testcases;
+
+import autotest.common.Base;
+import autotest.dataprovider.DataCreateAcc;
+import autotest.page.TestCreateAcc;
+import org.testng.annotations.Test;
+
+import java.awt.*;
+import java.util.LinkedHashMap;
+
+public class CreateAccTest extends Base {
+    public TestCreateAcc testCreateAcc = new TestCreateAcc();
+
+    @Test(dataProvider = "data_provider_create_acc_excel_hash", dataProviderClass = DataCreateAcc.class)
+    public void testCreateAcc (LinkedHashMap< String, String > data) throws AWTException {
+        testCreateAcc.testcaseName(data);
+    }
+}
+
+
+
 

@@ -102,6 +102,12 @@ public class TestCreateAcc extends Base {
         helpers.clickElement(By.xpath("//button[contains(text(),'Tạo')]"));
         helpers.sleep(2);
         helpers.waitPageLoad(10);
+
+//Kiểm tra thành công: Kiểm tra xem thông báo thành công (msgToast) và thông tin tài khoản (username, full_name) có hiển thị đúng không.
+//Kiểm tra ảnh upload: Nếu đường dẫn ảnh không thay đổi (vẫn là ảnh mặc định), thì kết luận ảnh chưa được upload thành công.
+//Kiểm tra lỗi: Nếu có lỗi về định dạng tên, kiểm tra xem thông báo lỗi có hiển thị hay không.
+//Đoạn code này đang thực hiện kiểm tra toàn bộ quá trình upload và tạo tài khoản, bao gồm việc upload ảnh đại diện và kiểm tra tính chính xác của các trường dữ liệu.
+
         if (!data.get("msgToast").equals("")) {
             WebElement elementToast = helpers.getElement(By.xpath("//div[@class='toast-message']"));
             WebElement elementTable = helpers.getElement(By.xpath("//tr[@class='odd'][1]/td[8]"));

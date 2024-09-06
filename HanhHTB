@@ -117,9 +117,11 @@ public class TestCreateAcc extends Base {
             if (elementTable != null) {
                 helpers.checkText(elementTable, data.get("username"));
                 helpers.clickElement(By.xpath("//body[1]/div[2]/div[4]/div[1]/div[1]/div[3]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[3]/div[2]/table[1]/tbody[1]/tr[1]/td[11]/div[1]/a[1]"));
+               
                 // Get Attribute để kiểm tra file ảnh
                 WebElement elementImg = helpers.getElement(By.xpath("//img[@class='float-sm-left wd-100p wd-sm-200 rounded-circle']"));
                 String attValue = elementImg.getAttribute("src");
+
                 // Check thông tin sau khi tạo thành công
                 WebElement elementHoten = helpers.getElement(By.name("full_name"));
                 String checkHoTen = elementHoten.getAttribute("value");
@@ -127,6 +129,7 @@ public class TestCreateAcc extends Base {
                 if (attValue.equals("https://staging.admin.hypit.paditech.org/assets/img/users/1.jpg")) {
                     helpers.failTestcase("Upload avt không thành công");
                 }
+
                 if (!checkHoTen.equals( data.get("hoten"))) {
                     helpers.failTestcase("Thông tin không chính xác");
                 } else {
